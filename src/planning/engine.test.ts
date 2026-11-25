@@ -3,11 +3,11 @@ import { applyProposalDecision, createWeeklyProposal } from "./engine";
 import type { PlanningInput, PlanningTask } from "./types";
 
 const tasks: PlanningTask[] = [
-  { id: "done-1", track: "external-classic", title: "Maths terminées", scheduledDate: "2026-12-01", durationMinutes: 45, priority: 80, required: false, status: "completed" },
-  { id: "missed-1", track: "external-classic", title: "Lecture manquée", scheduledDate: "2026-12-02", durationMinutes: 30, priority: 50, required: false, status: "missed" },
-  { id: "required-1", track: "external-classic", title: "Examen blanc", scheduledDate: "2026-12-03", durationMinutes: 60, priority: 100, required: true, status: "planned" },
-  { id: "high-1", track: "external-classic", title: "Fractions", scheduledDate: "2026-12-04", durationMinutes: 60, priority: 90, required: false, status: "planned" },
-  { id: "low-1", track: "external-classic", title: "Révision secondaire", scheduledDate: "2026-12-05", durationMinutes: 45, priority: 20, required: false, status: "planned" }
+  { id: "done-1", track: "external-classic", title: "Maths terminées", scheduledDate: "2026-11-30", durationMinutes: 45, priority: 80, required: false, status: "completed" },
+  { id: "missed-1", track: "external-classic", title: "Lecture manquée", scheduledDate: "2026-12-01", durationMinutes: 30, priority: 50, required: false, status: "missed" },
+  { id: "required-1", track: "external-classic", title: "Examen blanc", scheduledDate: "2026-12-02", durationMinutes: 60, priority: 100, required: true, status: "planned" },
+  { id: "high-1", track: "external-classic", title: "Fractions", scheduledDate: "2026-12-03", durationMinutes: 60, priority: 90, required: false, status: "planned" },
+  { id: "low-1", track: "external-classic", title: "Révision secondaire", scheduledDate: "2026-12-04", durationMinutes: 45, priority: 20, required: false, status: "planned" }
 ];
 
 const input: PlanningInput = {
@@ -45,6 +45,18 @@ describe("createWeeklyProposal", () => {
   it("rejects invalid availability and malformed dates", () => {
     expect(() => createWeeklyProposal({ ...input, availableMinutes: -1 })).toThrow(/availableMinutes/);
     expect(() => createWeeklyProposal({ ...input, weekStart: "next monday" })).toThrow(/YYYY-MM-DD/);
+  });
+  it("rejects impossible calendar dates", () => {
+    expect(() => createWeeklyProposal({ ...input, weekStart: "2026-02-30" })).toThrow(/real calendar date/);
+    expect(() => createWeeklyProposal({ ...input, tasks: [{ ...tasks[0], scheduledDate: "2026-02-30" }] })).toThrow(/real calendar date/);
+  });
+  it("requires the selected week to start on Monday", () => {
+    expect(() => createWeeklyProposal({ ...input, weekStart: "2026-12-01" })).toThrow(/Monday/);
+  });
+  it("rejects tasks outside the selected Monday-to-Sunday week", () => {
+    expect(() => createWeeklyProposal({
+      ...input, tasks: [{ ...tasks[0], scheduledDate: "2026-12-07" }]
+    })).toThrow(/within the selected week/);
   });
 });
 

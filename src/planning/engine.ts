@@ -6,11 +6,28 @@ import type {
   PlanningTask
 } from "./types";
 
+const DAY_MS = 86_400_000;
+
+function parseCalendarDate(value: string, field: string): number {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    throw new Error(`${field} must use YYYY-MM-DD`);
+  }
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+  if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString().slice(0, 10) !== value) {
+    throw new Error(`${field} must be a real calendar date`);
+  }
+  return timestamp;
+}
+
 function assertValidInput(input: PlanningInput): void {
   if (!input.proposalId.trim()) throw new Error("proposalId is required");
   if (!Number.isInteger(input.sourcePlanVersion) || input.sourcePlanVersion < 1) throw new Error("sourcePlanVersion must be a positive integer");
   if (!Number.isInteger(input.availableMinutes) || input.availableMinutes < 0) throw new Error("availableMinutes must be a non-negative integer");
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.weekStart)) throw new Error("weekStart must use YYYY-MM-DD");
+  const weekStartTimestamp = parseCalendarDate(input.weekStart, "weekStart");
+  if (new Date(weekStartTimestamp).getUTCDay() !== 1) {
+    throw new Error("weekStart must be a Monday");
+  }
+  const weekEndTimestamp = weekStartTimestamp + 6 * DAY_MS;
   const ids = new Set<string>();
   for (const task of input.tasks) {
     if (!task.id.trim() || ids.has(task.id)) throw new Error("Task IDs must be unique and non-empty");
@@ -18,7 +35,10 @@ function assertValidInput(input: PlanningInput): void {
     if (task.track !== input.track) throw new Error("A planning input cannot mix exam tracks");
     if (!Number.isInteger(task.durationMinutes) || task.durationMinutes <= 0) throw new Error(`Invalid duration for task ${task.id}`);
     if (!Number.isFinite(task.priority) || task.priority < 0 || task.priority > 100) throw new Error(`Priority for task ${task.id} must be between 0 and 100`);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(task.scheduledDate)) throw new Error(`Invalid scheduledDate for task ${task.id}`);
+    const taskDate = parseCalendarDate(task.scheduledDate, `scheduledDate for task ${task.id}`);
+    if (taskDate < weekStartTimestamp || taskDate > weekEndTimestamp) {
+      throw new Error(`Task ${task.id} must be scheduled within the selected week`);
+    }
   }
 }
 
