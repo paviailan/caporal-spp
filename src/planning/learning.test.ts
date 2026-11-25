@@ -23,7 +23,7 @@ describe("evaluateLearningNeed", () => {
 
   it("spaces reviews further apart as mastery increases", () => {
     const weak = evaluateLearningNeed({
-      ...base, attempts: 5, correctAnswers: 2, lastPracticedOn: "2026-11-24"
+      ...base, attempts: 5, correctAnswers: 1, lastPracticedOn: "2026-11-24"
     }, "2026-11-25");
     const strong = evaluateLearningNeed({ ...base, lastPracticedOn: "2026-11-20" }, "2026-11-25");
     expect(weak.intervalDays).toBe(1);
