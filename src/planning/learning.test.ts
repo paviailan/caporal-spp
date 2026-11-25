@@ -25,7 +25,7 @@ describe("evaluateLearningNeed", () => {
     const weak = evaluateLearningNeed({
       ...base, attempts: 5, correctAnswers: 2, lastPracticedOn: "2026-11-24"
     }, "2026-11-25");
-    const strong = evaluateLearningNeed(base, "2026-11-25");
+    const strong = evaluateLearningNeed({ ...base, lastPracticedOn: "2026-11-20" }, "2026-11-25");
     expect(weak.intervalDays).toBe(1);
     expect(strong.intervalDays).toBe(21);
     expect(strong.isDue).toBe(false);
