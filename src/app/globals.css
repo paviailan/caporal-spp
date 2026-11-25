@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light;
+  --ink: #17231f;
+  --muted: #64736c;
+  --paper: #f7f8f4;
+  --accent: #d34b2f;
+  --line: #e2e8e1;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+.shell { width: min(960px, calc(100% - 40px)); margin: 0 auto; padding: 88px 0 36px; }
+.hero { max-width: 720px; padding: 32px 0 64px; }
+.eyebrow, .panelLabel { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .16em; }
+h1 { margin: 18px 0; font-size: clamp(52px, 9vw, 88px); letter-spacing: -.07em; line-height: .95; }
+h1 span { color: var(--accent); }
+.intro { max-width: 590px; color: var(--muted); font-size: 19px; line-height: 1.65; }
+.status { display: inline-flex; align-items: center; gap: 10px; margin-top: 24px; padding: 11px 15px; border: 1px solid var(--line); border-radius: 999px; background: white; color: var(--muted); font-size: 13px; }
+.statusDot { width: 8px; height: 8px; border-radius: 50%; background: #d49a35; }
+.panel { padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: white; }
+.trackGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.trackGrid article { padding: 20px; border-radius: 14px; background: #f7f8f4; }
+.trackGrid h2 { margin: 0 0 9px; font-size: 18px; }
+.trackGrid p { margin: 0; color: var(--muted); line-height: 1.55; }
+footer { padding: 26px 0; color: var(--muted); font-size: 12px; }
+@media (max-width: 600px) {
+  .shell { padding-top: 44px; }
+  .trackGrid { grid-template-columns: 1fr; }
+  .panel { padding: 20px; }
+}
