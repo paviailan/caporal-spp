@@ -9,7 +9,7 @@ import type {
 const DAY_MS = 86_400_000;
 
 function parseCalendarDate(value: string, field: string): number {
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     throw new Error(`${field} must use YYYY-MM-DD`);
   }
   const timestamp = Date.parse(`${value}T00:00:00.000Z`);
